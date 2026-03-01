@@ -1,0 +1,15 @@
+def runGbfs(grid, start, goal, hFn):
+    counter, openSet, cameFrom, visited, inF, steps = 0, [(hFn(start,goal),0,start)], {}, set(), {start}, []
+    heapq.heapify(openSet)
+    while openSet:
+        _, _, cur = heapq.heappop(openSet)
+        if cur in visited: continue
+        inF.discard(cur); visited.add(cur)
+        steps.append((frozenset(inF), frozenset(visited), None))
+        if cur == goal:
+            steps.append((frozenset(), frozenset(visited), buildPath(cameFrom, goal))); return steps
+        for nb in getNeighbours(grid, *cur):
+            if nb not in visited and nb not in inF:
+                cameFrom[nb] = cur; counter += 1
+                heapq.heappush(openSet, (hFn(nb,goal), counter, nb)); inF.add(nb)
+    steps.append((frozenset(), frozenset(visited), [])); return steps
